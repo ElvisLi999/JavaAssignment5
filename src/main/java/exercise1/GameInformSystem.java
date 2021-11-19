@@ -6,10 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -66,8 +63,8 @@ public class GameInformSystem extends Application
         // Add GridPane to UI
         GridPane grid1 = new GridPane();
         grid1.setAlignment(Pos.CENTER);
-        grid1.setHgap(3);
-        grid1.setVgap(3);
+        grid1.setHgap(8);
+        grid1.setVgap(8);
         grid1.setPadding(new Insets(5,5,5,5));//Margins around grid(top,right,bottom,left)
 
         // Set First Name label and textField on gridPane
@@ -130,7 +127,7 @@ public class GameInformSystem extends Application
 
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10)); // Set all sides to 10
-        vbox.setSpacing(8);              // Gap between nodes
+        vbox.setSpacing(55);              // Gap between nodes
 
         Text title = new Text("Game");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -141,8 +138,8 @@ public class GameInformSystem extends Application
         // Add GridPane to UI
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.setHgap(3);
-        grid.setVgap(3);
+        grid.setHgap(8);
+        grid.setVgap(8);
         grid.setPadding(new Insets(5,5,5,5));//Margins around grid(top,right,bottom,left)
 
         // Set Game Title label and textField on gridPane
@@ -161,12 +158,23 @@ public class GameInformSystem extends Application
         GridPane.setHalignment(pDatePicker, HPos.RIGHT);
         grid.add(pDatePicker,1,1);
 
+        //Add Save Cancel buttons
+        Button buttonSave = new Button("Save");
+        Button buttonCancel = new Button("Cancel");
+        HBox hbox2 = new HBox();
+        hbox2.setAlignment(Pos.BOTTOM_RIGHT);
+        hbox2.setSpacing(10);
+
         // Add gridPane and hBox to VBox
         hBox.getChildren().add(grid);
-        vbox.getChildren().add(hBox);
+        hbox2.getChildren().addAll(buttonSave,buttonCancel);
+        vbox.getChildren().addAll(hBox,hbox2);
         return vbox;
 
-    }
+    } //end of method
+
+
+
     public static void main(String[] args)
     {
         launch();
