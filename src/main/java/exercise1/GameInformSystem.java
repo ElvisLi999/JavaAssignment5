@@ -5,10 +5,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -17,6 +14,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.time.LocalDate;
 
 public class GameInformSystem extends Application
 {
@@ -27,6 +26,7 @@ public class GameInformSystem extends Application
         HBox hbox = addHBox();
         border.setTop(hbox);
         border.setLeft(addVBox());
+        border.setCenter(addPlayAndGame());
 
         Scene scene = new Scene(border);
         stage.setScene(scene);
@@ -94,10 +94,6 @@ public class GameInformSystem extends Application
         GridPane.setHalignment(addrTextField, HPos.RIGHT);
         grid1.add(addrTextField,1,2);
 
-        // Add gridPane and hBox to VBox
-        hBox1.getChildren().add(grid1);
-        vbox.getChildren().add(hBox1);
-
         // Set Postal Code label and textField on gridPane
         Label zipLabel = new Label("Postal Code: ");
         TextField zipTextField = new TextField();
@@ -122,9 +118,55 @@ public class GameInformSystem extends Application
         GridPane.setHalignment(phoneNumberTextField, HPos.RIGHT);
         grid1.add(phoneNumberTextField,1,5);
 
+        // Add gridPane and hBox to VBox
+        hBox1.getChildren().add(grid1);
+        vbox.getChildren().add(hBox1);
+
         return vbox;
     } // end of addVbox method
 
+    private VBox addPlayAndGame()
+    {
+
+        VBox vbox = new VBox();
+        vbox.setPadding(new Insets(10)); // Set all sides to 10
+        vbox.setSpacing(8);              // Gap between nodes
+
+        Text title = new Text("Game");
+        title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        vbox.getChildren().add(title);
+
+        HBox hBox = new HBox();
+
+        // Add GridPane to UI
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(3);
+        grid.setVgap(3);
+        grid.setPadding(new Insets(5,5,5,5));//Margins around grid(top,right,bottom,left)
+
+        // Set Game Title label and textField on gridPane
+        Label gTitleLabel = new Label("Game Title: ");
+        TextField GTitleTextField = new TextField();
+        GridPane.setHalignment(gTitleLabel, HPos.LEFT);
+        grid.add(gTitleLabel,0,0);
+        GridPane.setHalignment(GTitleTextField, HPos.RIGHT);
+        grid.add(GTitleTextField,1,0);
+
+        // Set Playing Date label and datePicker on gridPane
+        Label pDateLabel = new Label("Playing Date: ");
+        DatePicker pDatePicker = new DatePicker(LocalDate.now());
+        GridPane.setHalignment(pDateLabel,HPos.LEFT);
+        grid.add(pDateLabel,0,1);
+        GridPane.setHalignment(pDatePicker, HPos.RIGHT);
+        grid.add(pDatePicker,1,1);
+
+        // Add gridPane and hBox to VBox
+        hBox.getChildren().add(grid);
+        vbox.getChildren().add(hBox);
+        return vbox;
+
+    }
     public static void main(String[] args)
     {
         launch();
