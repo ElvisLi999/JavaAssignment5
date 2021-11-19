@@ -6,6 +6,7 @@ module exercise1 {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires javafx.graphics;
+    requires java.sql;
 
     opens exercise1 to javafx.fxml;
     exports exercise1;

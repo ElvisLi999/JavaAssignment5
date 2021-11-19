@@ -12,6 +12,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class GameInformSystem extends Application
@@ -24,6 +25,8 @@ public class GameInformSystem extends Application
         border.setTop(hbox);
         border.setLeft(addVBox());
         border.setCenter(addPlayAndGame());
+
+
 
         Scene scene = new Scene(border);
         stage.setScene(scene);
@@ -169,6 +172,20 @@ public class GameInformSystem extends Application
         hBox.getChildren().add(grid);
         hbox2.getChildren().addAll(buttonSave,buttonCancel);
         vbox.getChildren().addAll(hBox,hbox2);
+        buttonSave.setOnAction(e ->
+        {
+            DBProcess dbProcess = new DBProcess();
+            dbProcess.dbConnect();
+            try
+            {
+                dbProcess.tableCreate();
+            }
+            catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+
+        });
         return vbox;
 
     } //end of method
