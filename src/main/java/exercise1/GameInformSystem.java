@@ -13,10 +13,27 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.util.Date;
+import java.text.DateFormat;
 
 public class GameInformSystem extends Application
 {
+    private TextField fNameTextField = new TextField();
+    private TextField lNameTextField = new TextField();
+    private TextField addrTextField = new TextField();
+    private TextField zipTextField = new TextField();
+    private TextField provinceTextField = new TextField();
+    private TextField phoneNumberTextField = new TextField();
+    private TextField GTitleTextField = new TextField();
+    private DatePicker pDatePicker = new DatePicker();
+    private TextField scoreTxtField = new TextField();
+    private TextField playerIdTxtField = new TextField();
+    private TextField gameIdTxtField = new TextField();
+    private TextField pgIdTxtField = new TextField();
+
     @Override
     public void start(Stage stage) throws Exception
     {
@@ -43,9 +60,13 @@ public class GameInformSystem extends Application
 
         Text header = new Text("Game Player Information System");
         header.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        TextField txtField = new TextField("Player ID");
+        txtField.setPrefSize(80,5);
+        Button btnGet = new Button("Get");
+        Button btnUpdate = new Button("Update");
 
 
-        hbox.getChildren().add(header);
+        hbox.getChildren().addAll(header,txtField,btnGet,btnUpdate);
 
         return hbox;
     } // End of addHbox method
@@ -72,7 +93,6 @@ public class GameInformSystem extends Application
 
         // Set First Name label and textField on gridPane
         Label fNameLabel = new Label("First Name: ");
-        TextField fNameTextField = new TextField();
         GridPane.setHalignment(fNameLabel, HPos.LEFT);
         grid1.add(fNameLabel,0,0);
         GridPane.setHalignment(fNameTextField, HPos.RIGHT);
@@ -80,7 +100,6 @@ public class GameInformSystem extends Application
 
         // Set Last Name label and textField on gridPane
         Label lNameLabel = new Label("Last Name: ");
-        TextField lNameTextField = new TextField();
         GridPane.setHalignment(lNameLabel,HPos.LEFT);
         grid1.add(lNameLabel,0,1);
         GridPane.setHalignment(lNameTextField, HPos.RIGHT);
@@ -88,7 +107,6 @@ public class GameInformSystem extends Application
 
         // Set Address label and textField on gridPane
         Label addrLabel = new Label("Address: ");
-        TextField addrTextField = new TextField();
         GridPane.setHalignment(addrLabel,HPos.LEFT);
         grid1.add(addrLabel,0,2);
         GridPane.setHalignment(addrTextField, HPos.RIGHT);
@@ -96,7 +114,6 @@ public class GameInformSystem extends Application
 
         // Set Postal Code label and textField on gridPane
         Label zipLabel = new Label("Postal Code: ");
-        TextField zipTextField = new TextField();
         GridPane.setHalignment(zipLabel,HPos.LEFT);
         grid1.add(zipLabel,0,3);
         GridPane.setHalignment(zipTextField, HPos.RIGHT);
@@ -104,7 +121,6 @@ public class GameInformSystem extends Application
 
         // Set Province label and textField on gridPane
         Label provinceLabel = new Label("Province: ");
-        TextField provinceTextField = new TextField();
         GridPane.setHalignment(provinceLabel,HPos.LEFT);
         grid1.add(provinceLabel,0,4);
         GridPane.setHalignment(provinceTextField, HPos.RIGHT);
@@ -112,7 +128,6 @@ public class GameInformSystem extends Application
 
         // Set Phone Number label and textField on gridPane
         Label phoneNumberLabel = new Label("Phone Number: ");
-        TextField phoneNumberTextField = new TextField();
         GridPane.setHalignment(phoneNumberLabel,HPos.LEFT);
         grid1.add(phoneNumberLabel,0,5);
         GridPane.setHalignment(phoneNumberTextField, HPos.RIGHT);
@@ -130,7 +145,7 @@ public class GameInformSystem extends Application
 
         VBox vbox = new VBox();
         vbox.setPadding(new Insets(10)); // Set all sides to 10
-        vbox.setSpacing(55);              // Gap between nodes
+        vbox.setSpacing(8);              // Gap between nodes
 
         Text title = new Text("Game");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -147,7 +162,6 @@ public class GameInformSystem extends Application
 
         // Set Game Title label and textField on gridPane
         Label gTitleLabel = new Label("Game Title: ");
-        TextField GTitleTextField = new TextField();
         GridPane.setHalignment(gTitleLabel, HPos.LEFT);
         grid.add(gTitleLabel,0,0);
         GridPane.setHalignment(GTitleTextField, HPos.RIGHT);
@@ -155,11 +169,38 @@ public class GameInformSystem extends Application
 
         // Set Playing Date label and datePicker on gridPane
         Label pDateLabel = new Label("Playing Date: ");
-        DatePicker pDatePicker = new DatePicker(LocalDate.now());
         GridPane.setHalignment(pDateLabel,HPos.LEFT);
         grid.add(pDateLabel,0,1);
         GridPane.setHalignment(pDatePicker, HPos.RIGHT);
         grid.add(pDatePicker,1,1);
+
+
+
+        // Set Score
+        Label scoreLabel = new Label("Score: ");
+        GridPane.setHalignment(scoreLabel,HPos.LEFT);
+        grid.add(scoreLabel,0,2);
+        GridPane.setHalignment(scoreTxtField, HPos.RIGHT);
+        grid.add(scoreTxtField,1,2);
+
+        // Set IDs
+        Label playerIdLabel = new Label("Player ID: ");
+        GridPane.setHalignment(playerIdLabel,HPos.LEFT);
+        grid.add(playerIdLabel,0,3);
+        GridPane.setHalignment(playerIdTxtField, HPos.RIGHT);
+        grid.add(playerIdTxtField,1,3);
+
+        Label gameIdLabel = new Label("Game ID: ");
+        GridPane.setHalignment(gameIdLabel,HPos.LEFT);
+        grid.add(gameIdLabel,0,4);
+        GridPane.setHalignment(gameIdTxtField, HPos.RIGHT);
+        grid.add(gameIdTxtField,1,4);
+
+        Label pgIdLabel = new Label("Player Game ID: ");
+        GridPane.setHalignment(pgIdLabel,HPos.LEFT);
+        grid.add(pgIdLabel,0,5);
+        GridPane.setHalignment(pgIdTxtField, HPos.RIGHT);
+        grid.add(pgIdTxtField,1,5);
 
         //Add Save Cancel buttons
         Button buttonSave = new Button("Save");
@@ -172,17 +213,45 @@ public class GameInformSystem extends Application
         hBox.getChildren().add(grid);
         hbox2.getChildren().addAll(buttonSave,buttonCancel);
         vbox.getChildren().addAll(hBox,hbox2);
+
+        //
         buttonSave.setOnAction(e ->
         {
+            String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
+            java.sql.Date playingDate;
+            Double score;
+            int playerID, gameID, playerGameID;
+
+            firstName = fNameTextField.getText();
+            lastName = lNameTextField.getText();
+            address = addrTextField.getText();
+            postalCode = zipTextField.getText();
+            province = provinceTextField.getText();
+            phoneNumber = phoneNumberTextField.getText();
+            gameTitle = GTitleTextField.getText();
+            score = Double.valueOf(scoreTxtField.getText());
+            playerID = Integer.parseInt(playerIdTxtField.getText());
+            gameID = Integer.parseInt(gameIdTxtField.getText());
+            playerGameID = Integer.parseInt(pgIdTxtField.getText());
+
+            // Convert the date type
+            Date date = Date.from(((LocalDate)pDatePicker.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
+            playingDate = new java.sql.Date(date.getTime());
+            System.out.println(playingDate);
+
+
+
             DBProcess dbProcess = new DBProcess();
             dbProcess.dbConnect();
             try
             {
                 dbProcess.tableCreate();
+                dbProcess.dataInsert(firstName,lastName,address,postalCode,province,phoneNumber,
+                        gameTitle,playingDate,score,playerID,gameID,playerGameID);
             }
             catch (SQLException ex)
             {
-                ex.printStackTrace();
+                System.out.println(ex.getMessage());
             }
 
         });

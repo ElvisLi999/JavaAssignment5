@@ -1,6 +1,7 @@
 package exercise1;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 public class DBProcess
 {
@@ -59,7 +60,7 @@ public class DBProcess
                 {
                     if (str.equals("game"))
                     {
-                        sql = "CREATE TABLE game (game_id integer PRIMARY KEY, game_name VARCHAR(100))";
+                        sql = "CREATE TABLE game (game_id integer PRIMARY KEY, game_title VARCHAR(100))";
                     }
                     else if (str.equals("player"))
                     {
@@ -88,6 +89,65 @@ public class DBProcess
             }
         } // end of for each.
     } // End of tableCreate method
+
+    //Insert data into tables
+    public void dataInsert(String fName,String lName,String addr,String pCode,String pvc,String pNumber,
+                           String gTitle,java.sql.Date pDate,Double sc,Integer pID,Integer gID,Integer pgID)
+    {
+        String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
+        java.sql.Date playingDate;
+        Double score;
+        Integer playerID, gameID, playerGameID;
+
+        firstName = fName;
+        lastName = lName;
+        address = addr;
+        postalCode = pCode;
+        province = pvc;
+        phoneNumber = pNumber;
+        gameTitle = gTitle;
+        playingDate = pDate;
+        score = sc;
+        playerID = pID;
+        gameID = gID;
+        playerGameID = pgID;
+
+        // Insert data
+        String sql1 = "";
+        String sql2 = "";
+        String sql3 = "";
+        try
+        {
+            System.out.println("Insert data into game table");
+            sql1 = "INSERT INTO game VALUES(" + gameID + ", '" + gameTitle + "')";
+            statement.execute(sql1);
+            System.out.println("Inserting data into game table is successful!");
+
+            System.out.println("Insert data into player table");
+            sql2 = "INSERT INTO player VALUES(" + playerID + ", '" + firstName + "', '" + lastName + "', '" +
+                    address + "', '" + postalCode + "', '" + province + "', '" + phoneNumber + "')";
+            statement.execute(sql2);
+            System.out.println("Inserting data into player table is successful!");
+
+            System.out.println("Insert data into playandgame table");
+            sql3 = "INSERT INTO playerandgame VALUES(?,?,?,?,?)";
+            PreparedStatement preSt = connection.prepareStatement(sql3);
+            preSt.setInt(1,playerGameID);
+            preSt.setInt(2,gameID);
+            preSt.setInt(3,playerID);
+            preSt.setDate(4,playingDate);
+            preSt.setDouble(5,score);
+            ResultSet resultSet = preSt.executeQuery();
+            System.out.println("Inserting data into playerandgame table is successful!");
+        }
+        catch(SQLException e)
+        {
+            System.out.println("Data are not saved.");
+            System.out.println(e.getMessage());
+        }
+
+
+    } // end of dataInsert method
 
     public static void main(String[] args)
     {
