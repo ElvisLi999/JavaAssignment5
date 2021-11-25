@@ -8,6 +8,12 @@ public class DBProcess
     //Declare variables Globally
     Connection connection = null;
     Statement statement = null;
+
+    // Declare variables Globally for getInform() method
+    int pID, gID, pgID, sc;
+    String fName, lName, addr, pCode, provc, pNum, gTitle;
+    java.sql.Date pyDate;
+
     // DB configuration
     public final static String dbURL = "jdbc:oracle:thin:@199.212.26.208:1521:SQLD";
     public final static String username = "COMP214F21_011_P_15";
@@ -118,18 +124,18 @@ public class DBProcess
         String sql3 = "";
         try
         {
-            System.out.println("Insert data into game table");
+            //Inserting data into game table
             sql1 = "INSERT INTO game VALUES(" + gameID + ", '" + gameTitle + "')";
             statement.execute(sql1);
             System.out.println("Inserting data into game table is successful!");
 
-            System.out.println("Insert data into player table");
+            //Inserting data into player table
             sql2 = "INSERT INTO player VALUES(" + playerID + ", '" + firstName + "', '" + lastName + "', '" +
                     address + "', '" + postalCode + "', '" + province + "', '" + phoneNumber + "')";
             statement.execute(sql2);
             System.out.println("Inserting data into player table is successful!");
 
-            System.out.println("Insert data into playandgame table");
+            //Inserting data into playerandgame table
             sql3 = "INSERT INTO playerandgame VALUES(?,?,?,?,?)";
             PreparedStatement preSt = connection.prepareStatement(sql3);
             preSt.setInt(1,playerGameID);
@@ -149,6 +155,48 @@ public class DBProcess
 
     } // end of dataInsert method
 
+    // get data from database
+    public void getInform(int plID)
+    {
+        String getInformSql = "";
+        getInformSql = "SELECT p.player_id, p.first_name, p.last_name, p.address, p.postal_code, p.province, p.phone_number," +
+                " g.game_id, g.game_title, pg.player_game_id, pg.playing_date, pg.score" +
+                " FROM player p, game g, playerandgame pg" +
+                " WHERE p.player_id = pg.player_id " +
+                "      AND g.game_id = pg.game_id" +
+                "      AND p.player_id = " + plID;
+
+        try
+        {
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(getInformSql);
+            while(rs.next())
+            {
+                pID = rs.getInt("player_id");
+                fName = rs.getString("first_name");
+                lName = rs.getString("last_name");
+                addr = rs.getString("address");
+                pCode = rs.getString("postal_code");
+                provc = rs.getString("province");
+                pNum = rs.getString("phone_number");
+                gTitle = rs.getString("game_title");
+                pyDate = rs.getDate("playing_date");
+                gID = rs.getInt("game_id");
+                pgID = rs.getInt("player_game_id");
+                sc = rs.getInt("score");
+
+            }
+            connection.close();
+
+        }
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+
+
+    } // End of getInform method
     public static void main(String[] args)
     {
         //DBProcess dbProcess = new DBProcess();

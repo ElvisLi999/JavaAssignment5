@@ -12,6 +12,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,7 +28,7 @@ public class GameInformSystem extends Application
     private TextField zipTextField = new TextField();
     private TextField provinceTextField = new TextField();
     private TextField phoneNumberTextField = new TextField();
-    private TextField GTitleTextField = new TextField();
+    private TextField gTitleTextField = new TextField();
     private DatePicker pDatePicker = new DatePicker();
     private TextField scoreTxtField = new TextField();
     private TextField playerIdTxtField = new TextField();
@@ -58,12 +59,52 @@ public class GameInformSystem extends Application
         hbox.setSpacing(10);   // Gap between nodes
         hbox.setStyle("-fx-background-color: #008080;");
 
+        // Add header, player id text field, two buttons
         Text header = new Text("Game Player Information System");
         header.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         TextField txtField = new TextField("Player ID");
         txtField.setPrefSize(80,5);
         Button btnGet = new Button("Get");
         Button btnUpdate = new Button("Update");
+
+        // Set action functions to two buttons
+        btnGet.setOnAction(e ->
+        {
+            int playerID;
+            playerID = Integer.parseInt(txtField.getText());
+
+            DBProcess dbProcess = new DBProcess();
+            dbProcess.dbConnect();
+            dbProcess.getInform(playerID);
+            playerIdTxtField.setText(String.valueOf(dbProcess.pID));
+            fNameTextField.setText(dbProcess.fName);
+            lNameTextField.setText(dbProcess.lName);
+            addrTextField.setText(dbProcess.addr);
+            zipTextField.setText(dbProcess.pCode);
+            provinceTextField.setText(dbProcess.provc);
+            phoneNumberTextField.setText(dbProcess.pNum);
+            gTitleTextField.setText(dbProcess.gTitle);
+            pDatePicker.setValue(dbProcess.pyDate.toLocalDate());
+            scoreTxtField.setText(String.valueOf(dbProcess.sc));
+            gameIdTxtField.setText(String.valueOf(dbProcess.gID));
+            pgIdTxtField.setText(String.valueOf(dbProcess.pgID));
+
+
+
+
+
+
+
+
+            System.out.println(playerID);
+
+
+        });
+
+        btnUpdate.setOnAction(e ->
+        {
+            System.out.println("update");
+        });
 
 
         hbox.getChildren().addAll(header,txtField,btnGet,btnUpdate);
@@ -164,8 +205,8 @@ public class GameInformSystem extends Application
         Label gTitleLabel = new Label("Game Title: ");
         GridPane.setHalignment(gTitleLabel, HPos.LEFT);
         grid.add(gTitleLabel,0,0);
-        GridPane.setHalignment(GTitleTextField, HPos.RIGHT);
-        grid.add(GTitleTextField,1,0);
+        GridPane.setHalignment(gTitleTextField, HPos.RIGHT);
+        grid.add(gTitleTextField,1,0);
 
         // Set Playing Date label and datePicker on gridPane
         Label pDateLabel = new Label("Playing Date: ");
@@ -214,7 +255,7 @@ public class GameInformSystem extends Application
         hbox2.getChildren().addAll(buttonSave,buttonCancel);
         vbox.getChildren().addAll(hBox,hbox2);
 
-        //
+        // Add action function to the "save" button
         buttonSave.setOnAction(e ->
         {
             String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
@@ -228,7 +269,7 @@ public class GameInformSystem extends Application
             postalCode = zipTextField.getText();
             province = provinceTextField.getText();
             phoneNumber = phoneNumberTextField.getText();
-            gameTitle = GTitleTextField.getText();
+            gameTitle = gTitleTextField.getText();
             score = Double.valueOf(scoreTxtField.getText());
             playerID = Integer.parseInt(playerIdTxtField.getText());
             gameID = Integer.parseInt(gameIdTxtField.getText());
@@ -257,7 +298,7 @@ public class GameInformSystem extends Application
         });
         return vbox;
 
-    } //end of method
+    } //end of addPlayAndGame method
 
 
 
