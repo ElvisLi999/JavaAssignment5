@@ -88,22 +88,39 @@ public class GameInformSystem extends Application
             scoreTxtField.setText(String.valueOf(dbProcess.sc));
             gameIdTxtField.setText(String.valueOf(dbProcess.gID));
             pgIdTxtField.setText(String.valueOf(dbProcess.pgID));
-
-
-
-
-
-
-
-
-            System.out.println(playerID);
-
-
         });
 
         btnUpdate.setOnAction(e ->
         {
-            System.out.println("update");
+            DBProcess dbProcess = new DBProcess();
+            dbProcess.dbConnect();
+
+            System.out.println("<------ Updating ------>");
+
+            String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
+            java.sql.Date playingDate;
+            Double score;
+            int playerID, gameID, playerGameID;
+
+            firstName = fNameTextField.getText();
+            lastName = lNameTextField.getText();
+            address = addrTextField.getText();
+            postalCode = zipTextField.getText();
+            province = provinceTextField.getText();
+            phoneNumber = phoneNumberTextField.getText();
+            gameTitle = gTitleTextField.getText();
+            score = Double.valueOf(scoreTxtField.getText());
+            playerID = Integer.parseInt(playerIdTxtField.getText());
+            gameID = Integer.parseInt(gameIdTxtField.getText());
+            playerGameID = Integer.parseInt(pgIdTxtField.getText());
+
+            // Convert the date type
+            Date date = Date.from(((LocalDate)pDatePicker.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
+            playingDate = new java.sql.Date(date.getTime());
+
+            dbProcess.updateInform(firstName,lastName,address,postalCode,province,phoneNumber,
+                    gameTitle,playingDate,score,playerID,gameID,playerGameID);
+
         });
 
 

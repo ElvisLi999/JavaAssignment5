@@ -187,7 +187,6 @@ public class DBProcess
 
             }
             connection.close();
-
         }
         catch (SQLException e)
         {
@@ -197,6 +196,66 @@ public class DBProcess
 
 
     } // End of getInform method
+
+
+    // Update information to database
+    public void updateInform(String fName,String lName,String addr,String pCode,String pvc,String pNumber,
+                             String gTitle,java.sql.Date pDate,Double sc,Integer pID,Integer gID,Integer pgID)
+    {
+        String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
+        java.sql.Date playingDate;
+        Double score;
+        Integer playerID, gameID, playerGameID;
+
+        firstName = fName;
+        lastName = lName;
+        address = addr;
+        postalCode = pCode;
+        province = pvc;
+        phoneNumber = pNumber;
+        gameTitle = gTitle;
+        playingDate = pDate;
+        score = sc;
+        playerID = pID;
+        gameID = gID;
+        playerGameID = pgID;
+
+        // Update data
+        String updateInformSql1 = "";
+        String updateInformSql2 = "";
+        String updateInformSql3 = "";
+
+
+        try
+        {
+            statement = connection.createStatement();
+
+            // Updating game table
+            updateInformSql1 = "UPDATE game SET game_title = '" + gameTitle + "'" +
+                    " WHERE game_id = " + gameID;
+            statement.executeUpdate(updateInformSql1);
+            System.out.println("Updating game table is successful!");
+
+            //Updating player table
+            updateInformSql2 = "UPDATE player SET first_name = '" + firstName + "', last_name = '" + lastName +
+                    "', address = '" + address + "', postal_code = '" + postalCode + "', province = '" + province + "', phone_number = '" + phoneNumber + "'" +
+                    "WHERE player_id = " + playerID;
+            statement.executeUpdate(updateInformSql2);
+            System.out.println("Updating player table is successful!");
+
+            //Updating playerandgame table
+            updateInformSql3 = "UPDATE playerandgame SET playing_date = to_date('" + playingDate + "', 'yyyy-mm-dd'), score = " + score + " WHERE player_game_id = " + playerGameID;
+            statement.executeUpdate(updateInformSql3);
+
+            System.out.println("Updating playerandgame table is successful!");
+        }
+        catch(SQLException e)
+        {
+            System.out.println("Data are not saved.");
+            System.out.println(e.getMessage());
+        }
+
+    } // End of updateInform method
     public static void main(String[] args)
     {
         //DBProcess dbProcess = new DBProcess();
