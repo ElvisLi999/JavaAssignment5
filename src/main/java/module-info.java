@@ -7,6 +7,7 @@ module exercise1 {
     requires org.kordamp.bootstrapfx.core;
     requires javafx.graphics;
     requires java.sql;
+    requires java.desktop;
 
     opens exercise1 to javafx.fxml;
     exports exercise1;

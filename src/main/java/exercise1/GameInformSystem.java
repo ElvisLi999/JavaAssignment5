@@ -59,22 +59,25 @@ public class GameInformSystem extends Application
         hbox.setSpacing(10);   // Gap between nodes
         hbox.setStyle("-fx-background-color: #008080;");
 
-        // Add header, player id text field, two buttons
+        // Add header, player id text field, three buttons
         Text header = new Text("Game Player Information System");
         header.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         TextField txtField = new TextField("Player ID");
         txtField.setPrefSize(80,5);
         Button btnGet = new Button("Get");
         Button btnUpdate = new Button("Update");
+        Button btnReport = new Button("Report");
 
-        // Set action functions to two buttons
+        // Set action functions to three buttons
         btnGet.setOnAction(e ->
         {
             int playerID;
             playerID = Integer.parseInt(txtField.getText());
+            System.out.println("<------ Getting information ------>");
 
             DBProcess dbProcess = new DBProcess();
             dbProcess.dbConnect();
+
             dbProcess.getInform(playerID);
             playerIdTxtField.setText(String.valueOf(dbProcess.pID));
             fNameTextField.setText(dbProcess.fName);
@@ -88,6 +91,7 @@ public class GameInformSystem extends Application
             scoreTxtField.setText(String.valueOf(dbProcess.sc));
             gameIdTxtField.setText(String.valueOf(dbProcess.gID));
             pgIdTxtField.setText(String.valueOf(dbProcess.pgID));
+            System.out.println("<------ Getting information is completed! ------>");
         });
 
         btnUpdate.setOnAction(e ->
@@ -121,10 +125,16 @@ public class GameInformSystem extends Application
             dbProcess.updateInform(firstName,lastName,address,postalCode,province,phoneNumber,
                     gameTitle,playingDate,score,playerID,gameID,playerGameID);
 
+            System.out.println("<------ Updating is completed! ------>");
+
         });
 
+        btnReport.setOnAction(e ->{
+        Report report = new Report();
+        report.createJTable();
+        });
 
-        hbox.getChildren().addAll(header,txtField,btnGet,btnUpdate);
+        hbox.getChildren().addAll(header,txtField,btnGet,btnUpdate,btnReport);
 
         return hbox;
     } // End of addHbox method

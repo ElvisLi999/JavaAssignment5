@@ -61,6 +61,7 @@ public class DBProcess
 
                 // Create tables
                 String sql = "";
+                String sequenceSql = "";
                 String str = String.valueOf(myTable);
                 try
                 {
