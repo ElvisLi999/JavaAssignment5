@@ -63,14 +63,19 @@ public class Report extends JFrame
                 //add to rowData
                 rowData.add(col);
             }
+            // Close the connection
             dbProcess.connection.close();
+            System.out.println("Database is disconnected.");
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         JFrame frame = new JFrame("Records of All Players");
         frame.setSize(1000, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Close application when close report window
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         Container contentPane = frame.getContentPane();
 
         jtable = new JTable(rowData, headers);

@@ -14,6 +14,9 @@ public class DBProcess
     String fName, lName, addr, pCode, provc, pNum, gTitle;
     java.sql.Date pyDate;
 
+    // Declare variables globally for getMaxId() methods
+    int gMaxID, pMaxID;
+
     // DB configuration
     public final static String dbURL = "jdbc:oracle:thin:@199.212.26.208:1521:SQLD";
     public final static String username = "COMP214F21_011_P_15";
@@ -68,6 +71,12 @@ public class DBProcess
                     if (str.equals("game"))
                     {
                         sql = "CREATE TABLE game (game_id integer PRIMARY KEY, game_title VARCHAR(100))";
+                        sequenceSql = "CREATE SEQUENCE sequence_game " +
+                                      " START WITH 2000" +
+                                      " INCREMENT BY 1" +
+                                      " NOCACHE " +
+                                      " NOCYCLE";
+
                     }
                     else if (str.equals("player"))
                     {
@@ -75,6 +84,11 @@ public class DBProcess
                                 "first_name VARCHAR(30), last_name VARCHAR(30), " +
                                 "address VARCHAR(100), postal_code VARCHAR(15), " +
                                 "province VARCHAR(10), phone_number VARCHAR(20))";
+                        sequenceSql = "CREATE SEQUENCE sequence_player " +
+                                " START WITH 1000" +
+                                " INCREMENT BY 1" +
+                                " NOCACHE " +
+                                " NOCYCLE";
                     }
                     else
                     {
@@ -83,8 +97,14 @@ public class DBProcess
                                 "playing_date date, score integer, " +
                                 "CONSTRAINT game_fk FOREIGN KEY (game_id) REFERENCES game(game_id), " +
                                 "CONSTRAINT player_fk FOREIGN KEY (player_id) REFERENCES player(player_id))";
+                        sequenceSql = "CREATE SEQUENCE sequence_PlayerGame " +
+                                " START WITH 3000" +
+                                " INCREMENT BY 1" +
+                                " NOCACHE " +
+                                " NOCYCLE";
                     }
 
+                    statement.execute(sequenceSql);
                     statement.execute(sql);
                     System.out.println("Table " + myTable + " is created.");
                 }
@@ -97,14 +117,11 @@ public class DBProcess
         } // end of for each.
     } // End of tableCreate method
 
-    //Insert data into tables
-    public void dataInsert(String fName,String lName,String addr,String pCode,String pvc,String pNumber,
-                           String gTitle,java.sql.Date pDate,Double sc,Integer pID,Integer gID,Integer pgID)
+    //Insert data1 into tables
+    public void dataInsert1(String fName,String lName,String addr,String pCode,String pvc,String pNumber,
+                           String gTitle)
     {
         String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
-        java.sql.Date playingDate;
-        Double score;
-        Integer playerID, gameID, playerGameID;
 
         firstName = fName;
         lastName = lName;
@@ -113,39 +130,23 @@ public class DBProcess
         province = pvc;
         phoneNumber = pNumber;
         gameTitle = gTitle;
-        playingDate = pDate;
-        score = sc;
-        playerID = pID;
-        gameID = gID;
-        playerGameID = pgID;
 
         // Insert data
         String sql1 = "";
         String sql2 = "";
-        String sql3 = "";
         try
         {
             //Inserting data into game table
-            sql1 = "INSERT INTO game VALUES(" + gameID + ", '" + gameTitle + "')";
+            sql1 = "INSERT INTO game VALUES(sequence_game.nextval, '" + gameTitle + "')";
             statement.execute(sql1);
             System.out.println("Inserting data into game table is successful!");
 
             //Inserting data into player table
-            sql2 = "INSERT INTO player VALUES(" + playerID + ", '" + firstName + "', '" + lastName + "', '" +
+            sql2 = "INSERT INTO player VALUES(sequence_player.nextval, '" + firstName + "', '" + lastName + "', '" +
                     address + "', '" + postalCode + "', '" + province + "', '" + phoneNumber + "')";
             statement.execute(sql2);
             System.out.println("Inserting data into player table is successful!");
 
-            //Inserting data into playerandgame table
-            sql3 = "INSERT INTO playerandgame VALUES(?,?,?,?,?)";
-            PreparedStatement preSt = connection.prepareStatement(sql3);
-            preSt.setInt(1,playerGameID);
-            preSt.setInt(2,gameID);
-            preSt.setInt(3,playerID);
-            preSt.setDate(4,playingDate);
-            preSt.setDouble(5,score);
-            ResultSet resultSet = preSt.executeQuery();
-            System.out.println("Inserting data into playerandgame table is successful!");
         }
         catch(SQLException e)
         {
@@ -154,7 +155,66 @@ public class DBProcess
         }
 
 
-    } // end of dataInsert method
+    } // end of dataInsert1 method
+
+
+    //Insert data2 into tables
+    public void dataInsert2(java.sql.Date pDate,Double sc)
+    {
+        java.sql.Date playingDate;
+        Double score;
+
+        playingDate = pDate;
+        score = sc;
+
+        // Insert data
+        String sql3 = "";
+        try
+        {
+            //Inserting data into playerandgame table
+            sql3 = "INSERT INTO playerandgame VALUES(sequence_PlayerGame.nextval,?, ?, ?, ?)";
+            PreparedStatement preSt = connection.prepareStatement(sql3);
+            preSt.setInt(1,gMaxID);
+            preSt.setInt(2,pMaxID);
+            preSt.setDate(3,playingDate);
+            preSt.setDouble(4,score);
+            ResultSet resultSet = preSt.executeQuery();
+            System.out.println("Inserting data into playerandgame table is successful!");
+            connection.close();
+            System.out.println("Database is disconnected.");
+        }
+        catch(SQLException e)
+        {
+            System.out.println("Data are not saved.");
+            System.out.println(e.getMessage());
+        }
+    } // end of dataInsert2 method
+
+    // get MaxID from database
+    public void getMaxID()
+    {
+        String getIdSql1 = "SELECT max(player_id) player_id FROM player";
+        String getIdSql2 = "SELECT max(game_id) game_id FROM game";
+
+        try
+        {
+            statement = connection.createStatement();
+            ResultSet rs1 = statement.executeQuery(getIdSql1);
+            while(rs1.next())
+            {
+                pMaxID = rs1.getInt("player_id");
+            }
+            ResultSet rs2 = statement.executeQuery(getIdSql2);
+            while(rs2.next())
+            {
+                gMaxID = rs2.getInt("game_id");
+            }
+        }
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }
+    } // End of getMaxID method
 
     // get data from database
     public void getInform(int plID)
@@ -185,17 +245,15 @@ public class DBProcess
                 gID = rs.getInt("game_id");
                 pgID = rs.getInt("player_game_id");
                 sc = rs.getInt("score");
-
             }
+            // close the database connection
             connection.close();
+            System.out.println("Database is disconnected.");
         }
         catch (SQLException e)
         {
             System.out.println(e.getMessage());
         }
-
-
-
     } // End of getInform method
 
 
@@ -226,7 +284,6 @@ public class DBProcess
         String updateInformSql2 = "";
         String updateInformSql3 = "";
 
-
         try
         {
             statement = connection.createStatement();
@@ -249,6 +306,11 @@ public class DBProcess
             statement.executeUpdate(updateInformSql3);
 
             System.out.println("Updating playerandgame table is successful!");
+
+            //Close database connection
+            statement.close();
+            System.out.println("Database is disconnected.");
+
         }
         catch(SQLException e)
         {
