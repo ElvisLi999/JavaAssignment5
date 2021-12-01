@@ -117,7 +117,7 @@ public class DBProcess
         } // end of for each.
     } // End of tableCreate method
 
-    //Insert data1 into tables
+    //Insert data into game and player tables
     public void dataInsert1(String fName,String lName,String addr,String pCode,String pvc,String pNumber,
                            String gTitle)
     {
@@ -147,48 +147,15 @@ public class DBProcess
             statement.execute(sql2);
             System.out.println("Inserting data into player table is successful!");
 
+            //Do not close the connection here!
+
         }
         catch(SQLException e)
         {
-            System.out.println("Data are not saved.");
+            System.out.println("Data are not inserted into Game and Player tables!");
             System.out.println(e.getMessage());
         }
-
-
     } // end of dataInsert1 method
-
-
-    //Insert data2 into tables
-    public void dataInsert2(java.sql.Date pDate,Double sc)
-    {
-        java.sql.Date playingDate;
-        Double score;
-
-        playingDate = pDate;
-        score = sc;
-
-        // Insert data
-        String sql3 = "";
-        try
-        {
-            //Inserting data into playerandgame table
-            sql3 = "INSERT INTO playerandgame VALUES(sequence_PlayerGame.nextval,?, ?, ?, ?)";
-            PreparedStatement preSt = connection.prepareStatement(sql3);
-            preSt.setInt(1,gMaxID);
-            preSt.setInt(2,pMaxID);
-            preSt.setDate(3,playingDate);
-            preSt.setDouble(4,score);
-            ResultSet resultSet = preSt.executeQuery();
-            System.out.println("Inserting data into playerandgame table is successful!");
-            connection.close();
-            System.out.println("Database is disconnected.");
-        }
-        catch(SQLException e)
-        {
-            System.out.println("Data are not saved.");
-            System.out.println(e.getMessage());
-        }
-    } // end of dataInsert2 method
 
     // get MaxID from database
     public void getMaxID()
@@ -215,6 +182,41 @@ public class DBProcess
             System.out.println(e.getMessage());
         }
     } // End of getMaxID method
+
+    //Insert data into playerandgame table
+    public void dataInsert2(java.sql.Date pDate,Double sc)
+    {
+        java.sql.Date playingDate;
+        Double score;
+
+        playingDate = pDate;
+        score = sc;
+
+        // Insert data
+        String sql3 = "";
+        try
+        {
+            //Inserting data into playerandgame table
+            sql3 = "INSERT INTO playerandgame VALUES(sequence_PlayerGame.nextval,?, ?, ?, ?)";
+            PreparedStatement preSt = connection.prepareStatement(sql3);
+            preSt.setInt(1,gMaxID);
+            preSt.setInt(2,pMaxID);
+            preSt.setDate(3,playingDate);
+            preSt.setDouble(4,score);
+            ResultSet resultSet = preSt.executeQuery();
+            System.out.println("Inserting data into GameAndPlayer table is successful!");
+
+            connection.close();
+            System.out.println("Database is disconnected.");
+        }
+        catch(SQLException e)
+        {
+            System.out.println("Data are not inserted into GameAndPlayer tables!");
+            System.out.println(e.getMessage());
+        }
+    } // end of dataInsert2 method
+
+
 
     // get data from database
     public void getInform(int plID)

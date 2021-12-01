@@ -11,15 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.awt.Color;
 import java.sql.SQLException;
-import java.awt.*;
 import java.time.*;
 import java.util.Date;
 
@@ -27,6 +23,7 @@ import static javafx.scene.text.Font.*;
 
 public class GameInformSystem extends Application
 {
+    private TextField txtField = new TextField("Player ID");
     private TextField fNameTextField = new TextField();
     private TextField lNameTextField = new TextField();
     private TextField addrTextField = new TextField();
@@ -70,7 +67,6 @@ public class GameInformSystem extends Application
         // Add header, player id text field, three buttons
         Text header = new Text("Game Player Information System");
         header.setFont(font("Arial", FontWeight.BOLD, 20));
-        TextField txtField = new TextField("Player ID");
         txtField.setPrefSize(80,5);
         Button btnGet = new Button("Get");
         Button btnUpdate = new Button("Update");
@@ -135,8 +131,7 @@ public class GameInformSystem extends Application
                     &&!phoneNumberTextField.getText().trim().equals("")
                     &&!gTitleTextField.getText().trim().equals("")
                     &&!scoreTxtField.getText().trim().equals("")
-                    &&!pDatePicker.getValue().equals("")
-            )
+                    &&pDatePicker.getValue()!=null)
             {
                 dataFullFilled = true;
             }
@@ -344,20 +339,45 @@ public class GameInformSystem extends Application
         GridPane.setHalignment(msgTxt, HPos.RIGHT);
         grid.add(msgTxt,1,6);
 
-        //Add Save Cancel buttons
-        Button buttonSave = new Button("Insert");
-        Button buttonCancel = new Button("Cancel");
+        //Add Clear, Save, and Cancel buttons
+        Button btnClear = new Button("Clear");
+        Button btnSave = new Button("Insert");
+        Button btnCancel = new Button("Cancel");
         HBox hbox2 = new HBox();
         hbox2.setAlignment(Pos.BOTTOM_RIGHT);
         hbox2.setSpacing(10);
 
         // Add gridPane and hBox to VBox
         hBox.getChildren().add(grid);
-        hbox2.getChildren().addAll(buttonSave,buttonCancel);
+        hbox2.getChildren().addAll(btnClear,btnSave,btnCancel);
         vbox.getChildren().addAll(hBox,hbox2);
 
+        // Add action function to the "clear" button
+        btnClear.setOnAction(e ->
+        {
+            //Cleaning all the text fields
+            txtField.setText("Player ID");
+            fNameTextField.setText("");
+            lNameTextField.setText("");
+            addrTextField.setText("");
+            zipTextField.setText("");
+            provinceTextField.setText("");
+            phoneNumberTextField.setText("");
+            gTitleTextField.setText("");
+            scoreTxtField.setText("");
+            pDatePicker.setValue(null);
+            playerIdTxt.setText("");
+            gameIdTxt.setText("");
+            pgIdTxt.setText("");
+
+            // Set notice
+            msgTxt.setText(("All text boxes are blank now!"));
+            msgTxt.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
+
+        });
+
         // Add action function to the "insert" button
-        buttonSave.setOnAction(e ->
+        btnSave.setOnAction(e ->
         {
             if(!fNameTextField.getText().trim().equals("")
                 &&!lNameTextField.getText().trim().equals("")
@@ -367,8 +387,7 @@ public class GameInformSystem extends Application
                 &&!phoneNumberTextField.getText().trim().equals("")
                 &&!gTitleTextField.getText().trim().equals("")
                 &&!scoreTxtField.getText().trim().equals("")
-                &&!pDatePicker.getValue().equals("")
-            )
+                &&pDatePicker.getValue()!=null)
             {
                 dataFullFilled = true;
             }
@@ -438,7 +457,7 @@ public class GameInformSystem extends Application
         });
 
         //Add function to cancel button
-        buttonCancel.setOnAction(e -> {System.exit(0);});
+        btnCancel.setOnAction(e -> {System.exit(0);});
         return vbox;
 
     } //end of addPlayAndGame method
