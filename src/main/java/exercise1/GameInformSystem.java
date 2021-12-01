@@ -7,19 +7,23 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.sql.ResultSet;
+import javax.swing.*;
+import java.awt.Color;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.awt.*;
 import java.time.*;
 import java.util.Date;
-import java.text.DateFormat;
+
+import static javafx.scene.text.Font.*;
 
 public class GameInformSystem extends Application
 {
@@ -35,6 +39,9 @@ public class GameInformSystem extends Application
     private Text playerIdTxt = new Text();
     private Text gameIdTxt = new Text();
     private Text pgIdTxt = new Text();
+    private Label msgTxt = new Label();
+
+    private boolean dataFullFilled = false;
 
     @Override
     public void start(Stage stage) throws Exception
@@ -50,7 +57,7 @@ public class GameInformSystem extends Application
         stage.setTitle("Game Player Information System");
         stage.show();
         // Close the app when the stage is closed
-        stage.setOnCloseRequest(e -> Platform.exit());
+        stage.setOnCloseRequest(e -> {System.exit(0);});
     }
 
     private HBox addHBox()
@@ -62,7 +69,7 @@ public class GameInformSystem extends Application
 
         // Add header, player id text field, three buttons
         Text header = new Text("Game Player Information System");
-        header.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        header.setFont(font("Arial", FontWeight.BOLD, 20));
         TextField txtField = new TextField("Player ID");
         txtField.setPrefSize(80,5);
         Button btnGet = new Button("Get");
@@ -75,69 +82,118 @@ public class GameInformSystem extends Application
         btnGet.setOnAction(e ->
         {
             int playerID;
-            //Enter the player ID
-            playerID = Integer.parseInt(txtField.getText());
-            System.out.println("<------ Getting information ------>");
 
-            // Create the database connection
-            DBProcess dbProcess = new DBProcess();
-            dbProcess.dbConnect();
+            if(txtField.getText().trim().equals("")||txtField.getText().trim().equals("Player ID"))
+            {
+                // Set notice
+                msgTxt.setText(("Please prompt the Player ID first!"));
+                msgTxt.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
 
-            // Execute the select sql statement to get detailed information and closed connection
-            dbProcess.getInform(playerID);
-            // Load the values into UI's objects
-            playerIdTxt.setText(String.valueOf(dbProcess.pID));
-            fNameTextField.setText(dbProcess.fName);
-            lNameTextField.setText(dbProcess.lName);
-            addrTextField.setText(dbProcess.addr);
-            zipTextField.setText(dbProcess.pCode);
-            provinceTextField.setText(dbProcess.provc);
-            phoneNumberTextField.setText(dbProcess.pNum);
-            gTitleTextField.setText(dbProcess.gTitle);
-            pDatePicker.setValue(dbProcess.pyDate.toLocalDate());
-            scoreTxtField.setText(String.valueOf(dbProcess.sc));
-            gameIdTxt.setText(String.valueOf(dbProcess.gID));
-            pgIdTxt.setText(String.valueOf(dbProcess.pgID));
+            }
+            else
+            {
+                //Enter the player ID
+                playerID = Integer.parseInt(txtField.getText());
+                System.out.println("<------ Getting information ------>");
 
-            System.out.println("<------ Getting information is completed! ------>");
+                // Create the database connection
+                DBProcess dbProcess = new DBProcess();
+                dbProcess.dbConnect();
+
+                // Execute the select sql statement to get detailed information and closed connection
+                dbProcess.getInform(playerID);
+                // Load the values into UI's objects
+                playerIdTxt.setText(String.valueOf(dbProcess.pID));
+                fNameTextField.setText(dbProcess.fName);
+                lNameTextField.setText(dbProcess.lName);
+                addrTextField.setText(dbProcess.addr);
+                zipTextField.setText(dbProcess.pCode);
+                provinceTextField.setText(dbProcess.provc);
+                phoneNumberTextField.setText(dbProcess.pNum);
+                gTitleTextField.setText(dbProcess.gTitle);
+                pDatePicker.setValue(dbProcess.pyDate.toLocalDate());
+                scoreTxtField.setText(String.valueOf(dbProcess.sc));
+                gameIdTxt.setText(String.valueOf(dbProcess.gID));
+                pgIdTxt.setText(String.valueOf(dbProcess.pgID));
+
+                System.out.println("<------ Getting information is completed! ------>");
+                // Set notice
+                msgTxt.setText(("Player ID: " + playerID + " | Data are loaded!"));
+                msgTxt.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
+            }
+
         });
 
         // Update information depends on the player_id and values from UI objects
         btnUpdate.setOnAction(e ->
         {
-            // Create the database connection
-            DBProcess dbProcess = new DBProcess();
-            dbProcess.dbConnect();
+            if(!fNameTextField.getText().trim().equals("")
+                    &&!lNameTextField.getText().trim().equals("")
+                    &&!addrTextField.getText().trim().equals("")
+                    &&!zipTextField.getText().trim().equals("")
+                    &&!provinceTextField.getText().trim().equals("")
+                    &&!phoneNumberTextField.getText().trim().equals("")
+                    &&!gTitleTextField.getText().trim().equals("")
+                    &&!scoreTxtField.getText().trim().equals("")
+                    &&!pDatePicker.getValue().equals("")
+            )
+            {
+                dataFullFilled = true;
+            }
 
-            System.out.println("<------ Updating ------>");
+            if(playerIdTxt.getText().trim().equals("")||gameIdTxt.getText().trim().equals("")||pgIdTxt.getText().trim().equals(""))
+            {
+                // Set notice
+                msgTxt.setText(("Please get the data first!"));
+                msgTxt.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+            }
+            else if(!dataFullFilled)
+            {
+                // Set notice
+                msgTxt.setText(("Please don't leave blank!"));
+                msgTxt.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+            }
+            else
+            {
+                // Create the database connection
+                DBProcess dbProcess = new DBProcess();
+                dbProcess.dbConnect();
 
-            //Declare and initialize the local variables
-            String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
-            java.sql.Date playingDate;
-            Double score;
-            int playerID, gameID, playerGameID;
+                System.out.println("<------ Updating ------>");
 
-            firstName = fNameTextField.getText();
-            lastName = lNameTextField.getText();
-            address = addrTextField.getText();
-            postalCode = zipTextField.getText();
-            province = provinceTextField.getText();
-            phoneNumber = phoneNumberTextField.getText();
-            gameTitle = gTitleTextField.getText();
-            score = Double.valueOf(scoreTxtField.getText());
-            playerID = Integer.parseInt(playerIdTxt.getText());
-            gameID = Integer.parseInt(gameIdTxt.getText());
-            playerGameID = Integer.parseInt(pgIdTxt.getText());
+                //Declare and initialize the local variables
+                String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
+                java.sql.Date playingDate;
+                Double score;
+                int playerID, gameID, playerGameID;
 
-            // Convert the date type from localDate to SQL Date
-            Date date = Date.from(((LocalDate)pDatePicker.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
-            playingDate = new java.sql.Date(date.getTime());
+                firstName = fNameTextField.getText();
+                lastName = lNameTextField.getText();
+                address = addrTextField.getText();
+                postalCode = zipTextField.getText();
+                province = provinceTextField.getText();
+                phoneNumber = phoneNumberTextField.getText();
+                gameTitle = gTitleTextField.getText();
+                score = Double.valueOf(scoreTxtField.getText());
+                playerID = Integer.parseInt(playerIdTxt.getText());
+                gameID = Integer.parseInt(gameIdTxt.getText());
+                playerGameID = Integer.parseInt(pgIdTxt.getText());
 
-            // Execute the update sql statement to modify detailed information and close the connection
-            dbProcess.updateInform(firstName,lastName,address,postalCode,province,phoneNumber,
-                    gameTitle,playingDate,score,playerID,gameID,playerGameID);
+                // Convert the date type from localDate to SQL Date
+                Date date = Date.from(((LocalDate)pDatePicker.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                playingDate = new java.sql.Date(date.getTime());
 
-            System.out.println("<------ Updating is completed! ------>");
+                // Execute the update sql statement to modify detailed information and close the connection
+                dbProcess.updateInform(firstName,lastName,address,postalCode,province,phoneNumber,
+                        gameTitle,playingDate,score,playerID,gameID,playerGameID);
+
+                System.out.println("<------ Updating is completed! ------>");
+                // Set notice
+                msgTxt.setText(("Player ID: " + playerID + " | Data are updated!"));
+                msgTxt.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
+                System.out.println(pDatePicker.getValue());
+            }
+
 
         });
 
@@ -162,7 +218,7 @@ public class GameInformSystem extends Application
         vbox.setSpacing(8);              // Gap between nodes
 
         Text title = new Text("Player");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        title.setFont(font("Arial", FontWeight.BOLD, 14));
         vbox.getChildren().add(title);
 
         HBox hBox1 = new HBox();
@@ -231,7 +287,7 @@ public class GameInformSystem extends Application
         vbox.setSpacing(8);              // Gap between nodes
 
         Text title = new Text("Game");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        title.setFont(font("Arial", FontWeight.BOLD, 14));
         vbox.getChildren().add(title);
 
         HBox hBox = new HBox();
@@ -285,8 +341,11 @@ public class GameInformSystem extends Application
         GridPane.setHalignment(pgIdTxt, HPos.RIGHT);
         grid.add(pgIdTxt,1,5);
 
+        GridPane.setHalignment(msgTxt, HPos.RIGHT);
+        grid.add(msgTxt,1,6);
+
         //Add Save Cancel buttons
-        Button buttonSave = new Button("Save");
+        Button buttonSave = new Button("Insert");
         Button buttonCancel = new Button("Cancel");
         HBox hbox2 = new HBox();
         hbox2.setAlignment(Pos.BOTTOM_RIGHT);
@@ -297,52 +356,89 @@ public class GameInformSystem extends Application
         hbox2.getChildren().addAll(buttonSave,buttonCancel);
         vbox.getChildren().addAll(hBox,hbox2);
 
-        // Add action function to the "save" button
+        // Add action function to the "insert" button
         buttonSave.setOnAction(e ->
         {
-            //Declare variables to contain values of text boxes
-            String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
-            java.sql.Date playingDate;
-            Double score;
-
-            firstName = fNameTextField.getText();
-            lastName = lNameTextField.getText();
-            address = addrTextField.getText();
-            postalCode = zipTextField.getText();
-            province = provinceTextField.getText();
-            phoneNumber = phoneNumberTextField.getText();
-            gameTitle = gTitleTextField.getText();
-            score = Double.valueOf(scoreTxtField.getText());
-
-            // Convert the date type
-            Date date = Date.from(((LocalDate)pDatePicker.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
-            playingDate = new java.sql.Date(date.getTime());
-            System.out.println(playingDate);
-
-
-
-            //Connect to the database
-            DBProcess dbProcess = new DBProcess();
-            dbProcess.dbConnect();
-
-            //Create tables and insert values
-            try
+            if(!fNameTextField.getText().trim().equals("")
+                &&!lNameTextField.getText().trim().equals("")
+                &&!addrTextField.getText().trim().equals("")
+                &&!zipTextField.getText().trim().equals("")
+                &&!provinceTextField.getText().trim().equals("")
+                &&!phoneNumberTextField.getText().trim().equals("")
+                &&!gTitleTextField.getText().trim().equals("")
+                &&!scoreTxtField.getText().trim().equals("")
+                &&!pDatePicker.getValue().equals("")
+            )
             {
-                //Create tables if needed
-                dbProcess.tableCreate();
-                //Insert values into Player and Game tables
-                dbProcess.dataInsert1(firstName,lastName,address,postalCode,province,phoneNumber,
-                        gameTitle);
-                //Get the newest id from player and game tables
-                dbProcess.getMaxID();
-                //Insert values into PlayAndGame table and close the connection
-                dbProcess.dataInsert2(playingDate,score);
+                dataFullFilled = true;
             }
-            catch (SQLException ex)
+            if(!dataFullFilled)
             {
-                System.out.println(ex.getMessage());
+                // Set notice
+                msgTxt.setText(("Please fill all the blank fields first!"));
+                msgTxt.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             }
+            else if (!playerIdTxt.getText().trim().equals("")
+                    ||!gameIdTxt.getText().trim().equals("")
+                    ||!pgIdTxt.getText().trim().equals(""))
+            {
+                // Set notice
+                msgTxt.setText(("Please click update button."));
+                msgTxt.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+
+            }
+            else
+            {
+                //Declare variables to contain values of text boxes
+                String firstName, lastName, address, postalCode, province, phoneNumber, gameTitle;
+                java.sql.Date playingDate;
+                Double score;
+
+                firstName = fNameTextField.getText();
+                lastName = lNameTextField.getText();
+                address = addrTextField.getText();
+                postalCode = zipTextField.getText();
+                province = provinceTextField.getText();
+                phoneNumber = phoneNumberTextField.getText();
+                gameTitle = gTitleTextField.getText();
+                score = Double.valueOf(scoreTxtField.getText());
+
+                // Convert the date type
+                Date date = Date.from(((LocalDate)pDatePicker.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                playingDate = new java.sql.Date(date.getTime());
+                System.out.println(playingDate);
+
+                //Connect to the database
+                DBProcess dbProcess = new DBProcess();
+                dbProcess.dbConnect();
+
+                //Create tables and insert values
+                try
+                {
+                    //Create tables if needed
+                    dbProcess.tableCreate();
+                    //Insert values into Player and Game tables
+                    dbProcess.dataInsert1(firstName,lastName,address,postalCode,province,phoneNumber,
+                            gameTitle);
+                    //Get the newest id from player and game tables
+                    dbProcess.getMaxID();
+                    //Insert values into PlayAndGame table and close the connection
+                    dbProcess.dataInsert2(playingDate,score);
+                    // Set notice
+                    msgTxt.setText(("Name: " + firstName + " | Data are inserted!"));
+                    msgTxt.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
+                    System.out.println(pDatePicker.getValue());
+                }
+                catch (SQLException ex)
+                {
+                    System.out.println(ex.getMessage());
+                }
+            }
+
         });
+
+        //Add function to cancel button
+        buttonCancel.setOnAction(e -> {System.exit(0);});
         return vbox;
 
     } //end of addPlayAndGame method

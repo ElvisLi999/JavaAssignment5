@@ -1,7 +1,6 @@
 package exercise1;
 
 import java.sql.*;
-import java.time.LocalDate;
 
 public class DBProcess
 {
@@ -10,7 +9,8 @@ public class DBProcess
     Statement statement = null;
 
     // Declare variables Globally for getInform() method
-    int pID, gID, pgID, sc;
+    int pID, gID, pgID;
+    Double sc;
     String fName, lName, addr, pCode, provc, pNum, gTitle;
     java.sql.Date pyDate;
 
@@ -94,7 +94,7 @@ public class DBProcess
                     {
                         sql = "CREATE TABLE playerandgame (player_game_id integer PRIMARY KEY, " +
                                 "game_id integer, player_id integer, " +
-                                "playing_date date, score integer, " +
+                                "playing_date date, score number(10,2), " +
                                 "CONSTRAINT game_fk FOREIGN KEY (game_id) REFERENCES game(game_id), " +
                                 "CONSTRAINT player_fk FOREIGN KEY (player_id) REFERENCES player(player_id))";
                         sequenceSql = "CREATE SEQUENCE sequence_PlayerGame " +
@@ -244,7 +244,7 @@ public class DBProcess
                 pyDate = rs.getDate("playing_date");
                 gID = rs.getInt("game_id");
                 pgID = rs.getInt("player_game_id");
-                sc = rs.getInt("score");
+                sc = rs.getDouble("score");
             }
             // close the database connection
             connection.close();
@@ -319,14 +319,5 @@ public class DBProcess
         }
 
     } // End of updateInform method
-    public static void main(String[] args)
-    {
-        //DBProcess dbProcess = new DBProcess();
-        //dbProcess.dbConnect();
-
-    }
-
-
-
 
 }

@@ -58,7 +58,7 @@ public class Report extends JFrame
                 col.add(rs.getDate("playing_date"));
                 col.add(rs.getInt("game_id"));
                 col.add(rs.getInt("player_game_id"));
-                col.add(rs.getInt("score"));
+                col.add(rs.getDouble("score"));
 
                 //add to rowData
                 rowData.add(col);
