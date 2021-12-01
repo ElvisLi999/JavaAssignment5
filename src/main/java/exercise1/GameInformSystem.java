@@ -1,7 +1,6 @@
 package exercise1;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -341,8 +340,8 @@ public class GameInformSystem extends Application
 
         //Add Clear, Save, and Cancel buttons
         Button btnClear = new Button("Clear");
-        Button btnSave = new Button("Insert");
-        Button btnCancel = new Button("Cancel");
+        Button btnSave = new Button("Add");
+        Button btnCancel = new Button("Exit");
         HBox hbox2 = new HBox();
         hbox2.setAlignment(Pos.BOTTOM_RIGHT);
         hbox2.setSpacing(10);
