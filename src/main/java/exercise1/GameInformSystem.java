@@ -22,8 +22,8 @@ import static javafx.scene.text.Font.*;
 
 public class GameInformSystem extends Application
 {
-    private TextField txtField = new TextField("Player ID");
-    private TextField fNameTextField = new TextField();
+    protected TextField txtField = new TextField("Player ID");
+    protected TextField fNameTextField = new TextField();
     private TextField lNameTextField = new TextField();
     private TextField addrTextField = new TextField();
     private TextField zipTextField = new TextField();
@@ -36,11 +36,13 @@ public class GameInformSystem extends Application
     private Text gameIdTxt = new Text();
     private Text pgIdTxt = new Text();
     private Label msgTxt = new Label();
+    protected ComboBox<Integer> cb = new ComboBox<>();
+    protected int player_id;
 
     private boolean dataFullFilled = false;
 
     @Override
-    public void start(Stage stage) throws Exception
+    public void start(Stage stage)
     {
         BorderPane border = new BorderPane();
         HBox hbox = addHBox();
@@ -65,38 +67,30 @@ public class GameInformSystem extends Application
 
         // Add header, player id text field, three buttons
         Text header = new Text("Game Player Information System");
-        header.setFont(font("Arial", FontWeight.BOLD, 20));
+        header.setFont(font("Arial", FontWeight.BOLD, 15));
         txtField.setPrefSize(80,5);
-        Button btnGet = new Button("Get");
+
+        // Get player ID to choiceBox
+            list();
+
         Button btnUpdate = new Button("Update");
+        Button btnDelete = new Button("Delete");
         Button btnReport = new Button("Report");
 
-        // Set action functions to three buttons
-
-        // Get information depends on the player_id
-        btnGet.setOnAction(e ->
+        // Get playerid list from database
+        cb.setOnAction(e ->
         {
-            int playerID;
-
-            if(txtField.getText().trim().equals("")||txtField.getText().trim().equals("Player ID"))
+            if(cb.getValue()!=null)
             {
-                // Set notice
-                msgTxt.setText(("Please prompt the Player ID first!"));
-                msgTxt.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-
-            }
-            else
-            {
-                //Enter the player ID
-                playerID = Integer.parseInt(txtField.getText());
-                System.out.println("<------ Getting information ------>");
-
-                // Create the database connection
+                player_id = cb.getValue();
+                System.out.println("Selected ID is " + player_id);
                 DBProcess dbProcess = new DBProcess();
+
+                System.out.println("<------ Getting information of Player ID: " + player_id + " ------>");
                 dbProcess.dbConnect();
 
-                // Execute the select sql statement to get detailed information and closed connection
-                dbProcess.getInform(playerID);
+                //Execute the select sql statement to get detailed information
+                dbProcess.getInform(player_id); //it will close the connection automatically.
                 // Load the values into UI's objects
                 playerIdTxt.setText(String.valueOf(dbProcess.pID));
                 fNameTextField.setText(dbProcess.fName);
@@ -113,10 +107,14 @@ public class GameInformSystem extends Application
 
                 System.out.println("<------ Getting information is completed! ------>");
                 // Set notice
-                msgTxt.setText(("Player ID: " + playerID + " | Data are loaded!"));
+                msgTxt.setText(("Player ID: " + player_id + " | Data are loaded!"));
                 msgTxt.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
-            }
 
+            }
+            else
+            {
+                System.out.println("Record is deleted.");
+            }
         });
 
         // Update information depends on the player_id and values from UI objects
@@ -149,7 +147,6 @@ public class GameInformSystem extends Application
             }
             else
             {
-                // Create the database connection
                 DBProcess dbProcess = new DBProcess();
                 dbProcess.dbConnect();
 
@@ -187,8 +184,16 @@ public class GameInformSystem extends Application
                 msgTxt.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
                 System.out.println(pDatePicker.getValue());
             }
+        });
 
-
+        //Delete record
+        btnDelete.setOnAction(e ->
+        {
+                int playerID = cb.getValue();
+                DBProcess dbProcess = new DBProcess();
+                dbProcess.dbConnect();
+                dbProcess.deleteRecord(playerID);
+                list();
         });
 
         // Get report
@@ -199,7 +204,7 @@ public class GameInformSystem extends Application
             report.createJTable();
         });
 
-        hbox.getChildren().addAll(header,txtField,btnGet,btnUpdate,btnReport);
+        hbox.getChildren().addAll(header,cb,btnUpdate,btnDelete,btnReport);
 
         return hbox;
     } // End of addHbox method
@@ -355,7 +360,6 @@ public class GameInformSystem extends Application
         btnClear.setOnAction(e ->
         {
             //Cleaning all the text fields
-            txtField.setText("Player ID");
             fNameTextField.setText("");
             lNameTextField.setText("");
             addrTextField.setText("");
@@ -375,7 +379,7 @@ public class GameInformSystem extends Application
 
         });
 
-        // Add action function to the "insert" button
+        // Add action function to the "add" button
         btnSave.setOnAction(e ->
         {
             if(!fNameTextField.getText().trim().equals("")
@@ -446,6 +450,8 @@ public class GameInformSystem extends Application
                     msgTxt.setText(("Name: " + firstName + " | Data are inserted!"));
                     msgTxt.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
                     System.out.println(pDatePicker.getValue());
+                    //Call list method
+                    list();
                 }
                 catch (SQLException ex)
                 {
@@ -461,6 +467,16 @@ public class GameInformSystem extends Application
 
     } //end of addPlayAndGame method
 
+    public void list()
+    {
+        // Get player ID to choiceBox
+        DBProcess dbProcess = new DBProcess();
+        dbProcess.dbConnect();
+        dbProcess.getPIdList(); //it will close the connection automatically.
+        cb.getItems().clear();
+        cb.getItems().addAll(dbProcess.arrList);
+        //return cb;
+    } // End of list method
 
 
     public static void main(String[] args)

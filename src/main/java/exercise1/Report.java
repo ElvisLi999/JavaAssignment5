@@ -1,6 +1,8 @@
 package exercise1;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.sql.*;
 import java.util.Vector;
@@ -83,6 +85,23 @@ public class Report extends JFrame
         contentPane.add(jScrollPane);
         // Set width value for address column
         jtable.getColumnModel().getColumn(3).setPreferredWidth(100);
+
+        // Click one row to get inform
+        JTable finalJtable = jtable;
+        jtable.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                        int row= finalJtable.getSelectedRow();//选中行
+                        int col= finalJtable.getSelectedColumn();//选中列
+                        System.out.println("select:"+ finalJtable.getValueAt(row, 0)+"\t"+ finalJtable.getValueAt(row, 1));
+                }
+            }
+        });
+
         frame.setVisible(true);
     }
 }

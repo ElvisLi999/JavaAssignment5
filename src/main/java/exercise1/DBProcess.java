@@ -1,6 +1,7 @@
 package exercise1;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DBProcess
 {
@@ -13,6 +14,7 @@ public class DBProcess
     Double sc;
     String fName, lName, addr, pCode, provc, pNum, gTitle;
     java.sql.Date pyDate;
+    ArrayList<Integer> arrList = new ArrayList<Integer>();
 
     // Declare variables globally for getMaxId() methods
     int gMaxID, pMaxID;
@@ -321,5 +323,74 @@ public class DBProcess
         }
 
     } // End of updateInform method
+
+    // Delete record from database
+    public void deleteRecord(Integer pID)
+    {
+        // Get the ids that you want delete
+        String selectSql = "select player_game_id,game_id,player_id from playerandgame where player_id=" + pID;
+        int pgId = 0, gId = 0, pId = 0;
+        try
+        {
+            statement = connection.createStatement();
+            ResultSet rs1 = statement.executeQuery(selectSql);
+            while(rs1.next())
+            {
+                pgId = rs1.getInt("player_game_id");
+                gId = rs1.getInt("game_id");
+                pId = rs1.getInt("player_id");
+            }
+            System.out.println("player_game_id: " + pgId + " game_id: " + gId + " player_id: " + pId);
+
+            //Delete 3 records from 3 tables depends on ids
+            String deleteSql1 = "DELETE FROM playerandgame where player_game_id = " + pgId;
+            String deleteSql2 = "DELETE FROM game where game_id = " + gId;
+            String deleteSql3 = "DELETE FROM player where player_id = " + pId;
+
+            statement.executeUpdate(deleteSql1);
+            statement.executeUpdate(deleteSql2);
+            statement.executeUpdate(deleteSql3);
+
+            System.out.println("records of player: " + pId + "are deleted.");
+
+            //Close database connection
+            statement.close();
+            System.out.println("Database is disconnected.");
+
+        }
+        catch(SQLException e)
+        {
+            System.out.println("Data are not deleted.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // Get playerid list from database
+    public ArrayList getPIdList()
+    {
+        String sql = "SELECT player_id FROM player order by player_id";
+
+        try
+        {
+            arrList.clear();
+            statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            while(rs.next())
+            {
+                arrList.add(rs.getInt("player_id"));
+            }
+            System.out.println(arrList);
+            connection.close();
+            System.out.println("Database is disconnected.");
+
+        }
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        return arrList;
+
+    }
 
 }
